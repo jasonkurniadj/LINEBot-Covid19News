@@ -133,6 +133,16 @@ class Webhook extends Controller
 		}
 	}
 
+	private function sendContact($replyToken)
+	{
+		$message = "";
+		$message .= "Hotline Covid-19 Kemenkes RI\n";
+		$message .= "119 EXT 9";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
 	private function sendAbout($replyToken)
 	{
 		$message = "";
@@ -180,7 +190,7 @@ class Webhook extends Controller
 				break;
 			
 			case 'report':
-				if($words[1] == 'world')
+				if($words[1] == 'world' || empty($words[1]))
 				{
 					$this->sendStatistic($event['replyToken'], 'world');
 				}
@@ -195,7 +205,7 @@ class Webhook extends Controller
 				break;
 
 			case 'contact':
-				
+					$this->sendContact($event['replyToken']);
 				break;
 
 			case 'about':
@@ -218,41 +228,5 @@ class Webhook extends Controller
 				$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
 				break;
 		}
-
-		// if($words[0] == 'news')
-		// {
-		// 	$this->sendNews($event['replyToken']);
-		// }
-		// else if($words[0] == 'report')
-		// {
-		// 	if($words[1] == 'world')
-		// 	{
-		// 		$this->sendStatistic($event['replyToken'], 'world');
-		// 	}
-		// 	else
-		// 	{
-		// 		$this->sendStatistic($event['replyToken'], $words[1]);
-		// 	}
-		// }
-		// else if($words[0] == 'about')
-		// {
-		// 	$this->sendAbout($event['replyToken']);
-		// }
-		// else if($words[0] == 'help')
-		// {
-		// 	$this->sendHelp($event['replyToken']);
-		// }
-		// else
-		// {
-		// 	$hex = "100010";
-		// 	$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
-		// 	$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
-
-		// 	$message = "Kata kunci tidak ditemukan ".$emoji."\n";
-		// 	$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
-
-		// 	$textMessageBuilder = new TextMessageBuilder($message);
-		// 	$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-		// }
 	}
 }
