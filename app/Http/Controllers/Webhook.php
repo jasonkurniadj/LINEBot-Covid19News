@@ -46,7 +46,6 @@ class Webhook extends Controller
 		{
 			foreach ($data['events'] as $event)
 			{
-				// respond event
 				if($event['type'] == 'message')
 				{
 					if(method_exists($this, $event['message']['type'].'Message')){
@@ -63,26 +62,9 @@ class Webhook extends Controller
 			}
 		}
 
-
 		$this->response->setContent("No events found!");
 		$this->response->setStatusCode(200);
 		return $this->response;
-	}
-
-	private function getKeyword()
-	{
-		$message = "";
-		$message .= "Berikut kata kunci yang dapat Anda gunakan:\n";
-		$message .= "- news\n";
-		$message .= "   Untuk menampilkan berita terkini dari WHO.\n"
-		$message .= "- report world\n";
-		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
-		$message .= "- report [country_code]\n";
-		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
-		$message .= "- about\n";
-		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
-
-		return $message;
 	}
 
 	private function followCallback($event)
@@ -99,13 +81,21 @@ class Webhook extends Controller
 			$textMessageBuilder1 = new TextMessageBuilder($message1);
 
 			$message2 = "";
-			$message2 .= getKeyword();
+			$message2 .= "Berikut kata kunci yang dapat Anda gunakan:\n";
+			$message2 .= "- news\n";
+			$message2 .= "   Untuk menampilkan berita terkini dari WHO.\n"
+			$message2 .= "- report world\n";
+			$message2 .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
+			$message2 .= "- report [country_code]\n";
+			$message2 .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+			$message2 .= "- about\n";
+			$message2 .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
 			$message2 .= "\n";
-			$message2 .= "Anda dapat mengirimkan pesan \"HELP\" untuk dapat melihat kembali list kata kunci yang dapat digunakan.\n";
+			$message2 .= "Anda dapat mengirimkan pesan \"HELP\" untuk dapat melihat kembali list kata kunci yang dapat digunakan.";
 			$textMessageBuilder2 = new TextMessageBuilder($message2);
 			
 			$message3 = "";
-			$message3 .= "Selalu jaga kesehatan! 0x100020\n";
+			$message3 .= "Selalu jaga kesehatan ya! 0x100020\n";
 			$message3 .= "#Covid19 #physicalDistancing #diRumahAja #jagaKebersihan";
 			$textMessageBuilder3 = new TextMessageBuilder($message3);
 
@@ -171,7 +161,17 @@ class Webhook extends Controller
 
 	private function sendHelp($replyToken)
 	{
-		$message = getKeyword();
+		$message = "";
+		$message .= "Berikut kata kunci yang dapat Anda gunakan:\n";
+		$message .= "- news\n";
+		$message .= "   Untuk menampilkan berita terkini dari WHO.\n"
+		$message .= "- report world\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
+		$message .= "- report [country_code]\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+		$message .= "- about\n";
+		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
+
 		$textMessageBuilder = new TextMessageBuilder($message);
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
@@ -182,77 +182,76 @@ class Webhook extends Controller
 		$userMessage = strtolower($userMessage);
 
 		$words = explode(' ', trim($userMessage));
-		// switch ($words[0]) {
-		// 	case 'news':
-		// 		$this->sendNews($event['replyToken']);
-		// 		break;
+		switch ($words[0]) {
+			case 'news':
+				$this->sendNews($event['replyToken']);
+				break;
 
-		// 	case 'report':
-		// 		if($words[1] == 'world')
-		// 		{
-		// 			$this->sendStatistic($event['replyToken'], 'world');
-		// 		}
-		// 		else
-		// 		{
-		// 			$this->sendStatistic($event['replyToken'], $words[1]);
-		// 		}
-		// 		break;
+			case 'report':
+				if($words[1] == 'world')
+				{
+					$this->sendStatistic($event['replyToken'], 'world');
+				}
+				else
+				{
+					$this->sendStatistic($event['replyToken'], $words[1]);
+				}
+				break;
 
-		// 	case 'steps':
-		// 		# code...
-		// 		break;
+			case 'steps':
+				break;
 
-		// 	case 'about':
-		// 		$this->sendAbout($event['replyToken']);
-		// 		break;
+			case 'about':
+				$this->sendAbout($event['replyToken']);
+				break;
 
-		// 	case 'help':
-		// 		$this->sendHelp($event['replyToken']);
-		// 		break;
+			case 'help':
+				$this->sendHelp($event['replyToken']);
+				break;
 
-		// 	default:
-		// 		$message = "Kata kunci tidak ditemukan :(\n";
-		// 		$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+			default:
+				$message = "Kata kunci tidak ditemukan :(\n";
+				$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
-		// 		$textMessageBuilder = new TextMessageBuilder($message);
-		// 		$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-		// 		break;
+				$textMessageBuilder = new TextMessageBuilder($message);
+				$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+				break;
+		}
+
+		// if($words[0] == 'news')
+		// {
+		// 	$this->sendNews($event['replyToken']);
 		// }
+		// else if($words[0] == 'report')
+		// {
+		// 	if($words[1] == 'world')
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], 'world');
+		// 	}
+		// 	else
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], $words[1]);
+		// 	}
+		// }
+		// else if($words[0] == 'steps')
+		// {
 
-		if($words[0] == 'news')
-		{
-			$this->sendNews($event['replyToken']);
-		}
-		else if($words[0] == 'report')
-		{
-			if($words[1] == 'world')
-			{
-				$this->sendStatistic($event['replyToken'], 'world');
-			}
-			else
-			{
-				$this->sendStatistic($event['replyToken'], $words[1]);
-			}
-		}
-		else if($words[0] == 'steps')
-		{
+		// }
+		// else if($words[0] == 'about')
+		// {
+		// 	$this->sendAbout($event['replyToken']);
+		// }
+		// else if($words[0] == 'help')
+		// {
+		// 	$this->sendHelp($event['replyToken']);
+		// }
+		// else
+		// {
+		// 	$message = "Kata kunci tidak ditemukan :(\n";
+		// 	$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
-		}
-		else if($words[0] == 'about')
-		{
-			$this->sendAbout($event['replyToken']);
-		}
-		else if($words[0] == 'help')
-		{
-			$this->sendHelp($event['replyToken']);
-		}
-		else
-		{
-			$message = "Kata kunci tidak ditemukan :(\n";
-			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
-
-			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-		}
+		// 	$textMessageBuilder = new TextMessageBuilder($message);
+		// 	$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+		// }
 	}
 }
