@@ -172,7 +172,7 @@ class Webhook extends Controller
 
 		if($words[0] == 'news')
 		{
-			$this->sendQuestion($event['replyToken']);
+			$this->sendNews($event['replyToken']);
 		}
 		else if($words[0] == 'report')
 		{
@@ -195,7 +195,11 @@ class Webhook extends Controller
 		}
 		else
 		{
-			$message = "Kata kunci tidak ditemukan 0x100010\n";
+			$hex = "100010";
+			$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+			$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
+			$message = "Kata kunci tidak ditemukan ".$emoji."\n";
 			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
 			$textMessageBuilder = new TextMessageBuilder($message);
