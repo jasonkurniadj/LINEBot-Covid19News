@@ -31,7 +31,6 @@ class Webhook extends Controller
 		$this->request = $request;
 		$this->response = $response;
 
-		// create bot object
 		$httpClient = new CurlHTTPClient('7BsGfbfyE/7uq9NX+mFjXndUEnF2p9le1F2srRWQRgh8MDMIUtKsiYZ7K4v2GKX0Twvi9Z8ipzdck1n2MXtX1BIrKoaZOmNtlB3HcRCKaZk6Fe4a3AuG5n/QHGrpyWoxvWVj6WEpuRqguN+DZaFq4wdB04t89/1O/w1cDnyilFU=');
 		$this->bot  = new LINEBot($httpClient, ['channelSecret' => '1dfbde6acc6a7dcfdcedc082b63c0de7']);
 
@@ -67,6 +66,22 @@ class Webhook extends Controller
 		return $this->response;
 	}
 
+	private function getKeyword()
+	{
+		$message = "";
+		$message .= "Berikut kata kunci yang dapat Anda gunakan:\n";
+		$message .= "- news\n";
+		$message .= "   Untuk menampilkan berita terkini dari WHO.\n";
+		$message .= "- report world\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n";
+		$message .= "- report [country_code]\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+		$message .= "- about\n";
+		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
+
+		return $message;
+	}
+
 	private function followCallback($event)
 	{
 		$res = $this->bot->getProfile($event['source']['userId']);
@@ -81,21 +96,13 @@ class Webhook extends Controller
 			$textMessageBuilder1 = new TextMessageBuilder($message1);
 
 			$message2 = "";
-			$message2 .= "Berikut kata kunci yang dapat Anda gunakan:\n";
-			$message2 .= "- news\n";
-			$message2 .= "   Untuk menampilkan berita terkini dari WHO.\n"
-			$message2 .= "- report world\n";
-			$message2 .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
-			$message2 .= "- report [country_code]\n";
-			$message2 .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
-			$message2 .= "- about\n";
-			$message2 .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
+			$message2 .= getKeyword();
 			$message2 .= "\n";
-			$message2 .= "Anda dapat mengirimkan pesan \"HELP\" untuk dapat melihat kembali list kata kunci yang dapat digunakan.";
+			$message2 .= "Anda dapat mengirimkan pesan \"HELP\" untuk dapat melihat kembali list kata kunci yang dapat digunakan.\n";
 			$textMessageBuilder2 = new TextMessageBuilder($message2);
 			
 			$message3 = "";
-			$message3 .= "Selalu jaga kesehatan ya! 0x100020\n";
+			$message3 .= "Selalu jaga kesehatan! 0x100020\n";
 			$message3 .= "#Covid19 #physicalDistancing #diRumahAja #jagaKebersihan";
 			$textMessageBuilder3 = new TextMessageBuilder($message3);
 
@@ -161,17 +168,7 @@ class Webhook extends Controller
 
 	private function sendHelp($replyToken)
 	{
-		$message = "";
-		$message .= "Berikut kata kunci yang dapat Anda gunakan:\n";
-		$message .= "- news\n";
-		$message .= "   Untuk menampilkan berita terkini dari WHO.\n"
-		$message .= "- report world\n";
-		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
-		$message .= "- report [country_code]\n";
-		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
-		$message .= "- about\n";
-		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
-
+		$message = getKeyword();
 		$textMessageBuilder = new TextMessageBuilder($message);
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
