@@ -81,8 +81,12 @@ class Webhook extends Controller
 			$message1 .= "Anda dapat mengirimkan pesan \"HELP\" untuk melihat list kata kunci yang dapat digunakan.";
 			$textMessageBuilder1 = new TextMessageBuilder($message1);
 			
+			$hex = "100020";
+			$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+			$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
 			$message2 = "";
-			$message2 .= "Selalu jaga kesehatan! 0x100020\n";
+			$message2 .= "Selalu jaga kesehatan! ".$emoji."\n";
 			$message2 .= "#Covid19 #physicalDistancing #diRumahAja #jagaKebersihan";
 			$textMessageBuilder2 = new TextMessageBuilder($message2);
 
@@ -170,40 +174,85 @@ class Webhook extends Controller
 
 		$words = explode(' ', trim($userMessage));
 
-		if($words[0] == 'news')
-		{
-			$this->sendNews($event['replyToken']);
-		}
-		else if($words[0] == 'report')
-		{
-			if($words[1] == 'world')
-			{
-				$this->sendStatistic($event['replyToken'], 'world');
-			}
-			else
-			{
-				$this->sendStatistic($event['replyToken'], $words[1]);
-			}
-		}
-		else if($words[0] == 'about')
-		{
-			$this->sendAbout($event['replyToken']);
-		}
-		else if($words[0] == 'help')
-		{
-			$this->sendHelp($event['replyToken']);
-		}
-		else
-		{
-			$hex = "100010";
-			$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
-			$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+		switch ($words[0]) {
+			case 'news':
+				$this->sendNews($event['replyToken']);
+				break;
+			
+			case 'report':
+				if($words[1] == 'world')
+				{
+					$this->sendStatistic($event['replyToken'], 'world');
+				}
+				else
+				{
+					$this->sendStatistic($event['replyToken'], $words[1]);
+				}
+				break;
 
-			$message = "Kata kunci tidak ditemukan ".$emoji."\n";
-			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+			case 'steps':
+				
+				break;
 
-			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+			case 'contact':
+				
+				break;
+
+			case 'about':
+				$this->sendAbout($event['replyToken']);
+				break;
+
+			case 'help':
+				$this->sendHelp($event['replyToken']);
+				break;
+
+			default:
+				$hex = "100010";
+				$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+				$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
+				$message = "Kata kunci tidak ditemukan ".$emoji."\n";
+				$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+
+				$textMessageBuilder = new TextMessageBuilder($message);
+				$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+				break;
 		}
+
+		// if($words[0] == 'news')
+		// {
+		// 	$this->sendNews($event['replyToken']);
+		// }
+		// else if($words[0] == 'report')
+		// {
+		// 	if($words[1] == 'world')
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], 'world');
+		// 	}
+		// 	else
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], $words[1]);
+		// 	}
+		// }
+		// else if($words[0] == 'about')
+		// {
+		// 	$this->sendAbout($event['replyToken']);
+		// }
+		// else if($words[0] == 'help')
+		// {
+		// 	$this->sendHelp($event['replyToken']);
+		// }
+		// else
+		// {
+		// 	$hex = "100010";
+		// 	$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+		// 	$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
+		// 	$message = "Kata kunci tidak ditemukan ".$emoji."\n";
+		// 	$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+
+		// 	$textMessageBuilder = new TextMessageBuilder($message);
+		// 	$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+		// }
 	}
 }
