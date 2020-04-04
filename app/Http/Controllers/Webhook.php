@@ -69,34 +69,60 @@ class Webhook extends Controller
 		return $this->response;
 	}
 
+	private function getKeyword()
+	{
+		$message = "";
+		$message .= "Berikut kata kunci yang dapat Anda gunakan:\n";
+		$message .= "- news\n";
+		$message .= "   Untuk menampilkan berita terkini dari WHO.\n"
+		$message .= "- report world\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n"
+		$message .= "- report [country_code]\n";
+		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+		$message .= "- about\n";
+		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
+
+		return $message;
+	}
+
 	private function followCallback($event)
 	{
 		$res = $this->bot->getProfile($event['source']['userId']);
+
 		if ($res->isSucceeded())
 		{
 			$profile = $res->getJSONDecodedBody();
 
-			// create welcome message
-			$message  = "Salam kenal, " . $profile['displayName'] . "!\n";
-			$message .= "Silakan kirim pesan \"HELP\" untuk melihat kata kunci yang dapat digunakan.";
-			$textMessageBuilder = new TextMessageBuilder($message);
+			$message1 = "";
+			$message1 .= "Hallo, " . $profile['displayName'] . "!\n";
+			$message1 .= "Terima kasih telah menambahkan kami kedalam pertemanan Anda.\n";
+			$textMessageBuilder1 = new TextMessageBuilder($message1);
 
-			// create sticker message
-			$stickerMessageBuilder = new StickerMessageBuilder(1, 3);
+			$message2 = "";
+			$message2 .= getKeyword();
+			$message2 .= "\n";
+			$message2 .= "Anda dapat mengirimkan pesan \"HELP\" untuk dapat melihat kembali list kata kunci yang dapat digunakan.\n";
+			$textMessageBuilder2 = new TextMessageBuilder($message2);
+			
+			$message3 = "";
+			$message3 .= "Selalu jaga kesehatan! 0x100020\n";
+			$message3 .= "#Covid19 #physicalDistancing #diRumahAja #jagaKebersihan";
+			$textMessageBuilder3 = new TextMessageBuilder($message3);
 
-			// merge all message
+			$stickerMessageBuilder = new StickerMessageBuilder(11538, 51626496);
+
 			$multiMessageBuilder = new MultiMessageBuilder();
-			$multiMessageBuilder->add($textMessageBuilder);
+			$multiMessageBuilder->add($textMessageBuilder1);
+			$multiMessageBuilder->add($textMessageBuilder2);
+			$multiMessageBuilder->add($textMessageBuilder3);
 			$multiMessageBuilder->add($stickerMessageBuilder);
 
-			// send reply message
 			$this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
 		}
 	}
 
 	private function sendNews($replyToken)
 	{
-		// Get news from WHO
 		$endpoint = 'https://www.who.int/rss-feeds/news-english.xml';
 
 		$message = 'Send News from '.$endpoint.' ...';
@@ -107,7 +133,6 @@ class Webhook extends Controller
 
 	private function sendStatistic($replyToken, $countryCode='IDN')
 	{
-		// Get Statistic
 		if($countryCode == 'world')
 		{
 			$endpoint = 'https://corona.lmao.ninja/all';
@@ -132,11 +157,12 @@ class Webhook extends Controller
 	{
 		$message = "";
 		$message .= "Chatbot ini ditujukan untuk membantu masyarakat mempermudah memperoleh informasi mengenai COVID-19.\n";
-		$message .= "Informasi yang dapat ditampilkan dari chatbot ini adalah berita mengenai COVID-19 dari WHO, laporan jumlah kasus COVID-19 di seluruh dunia ataupun negara yang diinginkan.\n";
 		$message .= "\n";
-		$message .= "Semoga dengan adanya chatbot ini, masyarakat menjadi semakin teredukasi, terhindar dari hoax, serta dapat mengurangi persebaran COVID-19.\n";
+		$message .= "Informasi yang dapat ditampilkan dari chatbot ini adalah berita mengenai COVID-19 dari WHO, laporan jumlah kasus COVID-19 di seluruh dunia ataupun negara yang diinginkan yang bersumber dari referensi terpercaya.\n";
+		$message .= "\n";
+		$message .= "Semoga dengan adanya chatbot ini, masyarakat menjadi semakin teredukasi, terhindar dari hoax, dan dapat mengurangi persebaran COVID-19.\n";
+		$message .= "\n";
 		$message .= "Silahkan kirim pesan \"HELP\" untuk dapat melihat kata kunci yang dapat digunakan.\n";
-		$message .= "\n";
 		$message .= "Terima kasih.";
 
 		$textMessageBuilder = new TextMessageBuilder($message);
@@ -145,13 +171,7 @@ class Webhook extends Controller
 
 	private function sendHelp($replyToken)
 	{
-		$message = "";
-		$message .= "Berikut list kata kunci yang dapat Anda gunakan:\n";
-		$message .= "- news                    Untuk menampilkan berita terkini dari WHO.\n";
-		$message .= "- report world            Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n";
-		$message .= "- report [country_code]   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
-		$message .= "- about                   Untuk menampilkan informasi mengenai chatbot ini.\n";
-
+		$message = getKeyword();
 		$textMessageBuilder = new TextMessageBuilder($message);
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
@@ -162,37 +182,73 @@ class Webhook extends Controller
 		$userMessage = strtolower($userMessage);
 
 		$words = explode(' ', trim($userMessage));
+		switch ($words[0]) {
+			case 'news':
+				$this->sendNews($event['replyToken']);
+				break;
 
-		if($words[0] == 'news')
-		{
-			$this->sendQuestion($event['replyToken']);
-		}
-		else if($words[0] == 'report')
-		{
-			if($words[1] == 'world')
-			{
-				$this->sendStatistic($event['replyToken'], 'world');
-			}
-			else
-			{
-				$this->sendStatistic($event['replyToken'], $words[1]);
-			}
-		}
-		else if($words[0] == 'about')
-		{
-			$this->sendAbout($event['replyToken']);
-		}
-		else if($words[0] == 'help')
-		{
-			$this->sendHelp($event['replyToken']);
-		}
-		else
-		{
-			$message = "Kata kunci tidak ditemukan :(\n";
-			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+			case 'report':
+				if($words[1] == 'world')
+				{
+					$this->sendStatistic($event['replyToken'], 'world');
+				}
+				else
+				{
+					$this->sendStatistic($event['replyToken'], $words[1]);
+				}
+				break;
 
-			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+			case 'steps':
+				# code...
+				break;
+
+			case 'about':
+				$this->sendAbout($event['replyToken']);
+				break;
+
+			case 'help':
+				$this->sendHelp($event['replyToken']);
+				break;
+
+			default:
+				$message = "Kata kunci tidak ditemukan :(\n";
+				$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+
+				$textMessageBuilder = new TextMessageBuilder($message);
+				$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+				break;
 		}
+
+		// if($words[0] == 'news')
+		// {
+		// 	$this->sendNews($event['replyToken']);
+		// }
+		// else if($words[0] == 'report')
+		// {
+		// 	if($words[1] == 'world')
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], 'world');
+		// 	}
+		// 	else
+		// 	{
+		// 		$this->sendStatistic($event['replyToken'], $words[1]);
+		// 	}
+		// }
+		// else if($words[0] == 'about')
+		// {
+		// 	$this->sendAbout($event['replyToken']);
+		// }
+		// else if($words[0] == 'help')
+		// {
+		// 	$this->sendHelp($event['replyToken']);
+		// }
+		// else
+		// {
+		// 	$message = "Kata kunci tidak ditemukan :(\n";
+		// 	$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+
+		// 	$textMessageBuilder = new TextMessageBuilder($message);
+		// 	$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+		// }
 	}
 }
