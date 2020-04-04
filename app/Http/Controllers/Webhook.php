@@ -69,7 +69,6 @@ class Webhook extends Controller
 	private function followCallback($event)
 	{
 		$res = $this->bot->getProfile($event['source']['userId']);
-
 		if ($res->isSucceeded())
 		{
 			$profile = $res->getJSONDecodedBody();
@@ -177,6 +176,12 @@ class Webhook extends Controller
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
 
+	private function interactiveTalk($replyToken, $message)
+	{
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
 	private function textMessage($event)
 	{
 		$userMessage = $event['message']['text'];
@@ -185,10 +190,33 @@ class Webhook extends Controller
 		$words = explode(' ', trim($userMessage));
 
 		switch ($words[0]) {
+			case 'hallo':
+			case 'hello':
+				$res = $this->bot->getProfile($event['source']['userId']);
+				if ($res->isSucceeded())
+				{
+					$profile = $res->getJSONDecodedBody();
+
+					$message = "Hai, ".$profile['displayName']."!";
+					$this->interactiveTalk($event['replyToken'], $message);
+				}
+				break;
+			case 'hi':
+			case 'hai':
+			case 'hei':
+				$res = $this->bot->getProfile($event['source']['userId']);
+				if ($res->isSucceeded())
+				{
+					$profile = $res->getJSONDecodedBody();
+
+					$message = "Hallo, ".$profile['displayName']."!";
+					$this->interactiveTalk($event['replyToken'], $message);
+				}
+				break;
+
 			case 'news':
 				$this->sendNews($event['replyToken']);
 				break;
-			
 			case 'report':
 				if($words[1] == 'world' || !isset($words[1]))
 				{
@@ -199,7 +227,6 @@ class Webhook extends Controller
 					$this->sendStatistic($event['replyToken'], $words[1]);
 				}
 				break;
-
 			case 'steps':
 				if($words[1] == 'check')
 				{
@@ -211,18 +238,27 @@ class Webhook extends Controller
 				}
 				else
 				{
+					$hex = "100010";
+					$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+					$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
 
+					$message = "Parameter yang dimasukkan tidak sesuai ".$emoji."\n";
+					$message .= "Suggestion:\n";
+					$message .= "- steps check: Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
+					$message .= "- steps clean: Untuk menampilkan informasi bagaimana menjaga kesehatan kita agar terhindar dari COVID-19.\n";
+					$message .= "\n";
+					$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci lainnya yang tersedia.";
+
+					$textMessageBuilder = new TextMessageBuilder($message);
+					$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
 				}
 				break;
-
 			case 'contact':
 					$this->sendContact($event['replyToken']);
 				break;
-
 			case 'about':
 				$this->sendAbout($event['replyToken']);
 				break;
-
 			case 'help':
 				$this->sendHelp($event['replyToken']);
 				break;
