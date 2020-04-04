@@ -136,7 +136,7 @@ class Webhook extends Controller
 	private function sendContact($replyToken)
 	{
 		$message = "";
-		$message .= "Hotline Covid-19 Kemenkes RI\n";
+		$message .= "Hotline Covid-19 Kemenkes RI:\n";
 		$message .= "119 EXT 9";
 
 		$textMessageBuilder = new TextMessageBuilder($message);
@@ -190,7 +190,7 @@ class Webhook extends Controller
 				break;
 			
 			case 'report':
-				if($words[1] == 'world' || empty($words[1]))
+				if($words[1] == 'world' || !isset($words[1]))
 				{
 					$this->sendStatistic($event['replyToken'], 'world');
 				}
@@ -201,7 +201,18 @@ class Webhook extends Controller
 				break;
 
 			case 'steps':
-				
+				if($words[1] == 'check')
+				{
+
+				}
+				else if($words[1] == 'clean' || $words[1] == 'health')
+				{
+
+				}
+				else
+				{
+
+				}
 				break;
 
 			case 'contact':
