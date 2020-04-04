@@ -133,9 +133,11 @@ class Webhook extends Controller
 	{
 		$message = "";
 		$message .= "Chatbot ini ditujukan untuk membantu masyarakat mempermudah memperoleh informasi mengenai COVID-19.\n";
-		$message .= "Informasi yang dapat ditampilkan dari chatbot ini adalah berita mengenai COVID-19 dari WHO, laporan jumlah kasus COVID-19 di seluruh dunia ataupun negara yang diinginkan.\n";
+		$message .= "\n";
+		$message .= "Informasi yang dapat ditampilkan di chatbot ini adalah berita mengenai COVID-19 dari WHO, laporan jumlah kasus COVID-19 di seluruh dunia ataupun negara yang diinginkan dimana bersumber dari referensi yang terpercaya.\n";
 		$message .= "\n";
 		$message .= "Semoga dengan adanya chatbot ini, masyarakat menjadi semakin teredukasi, terhindar dari hoax, serta dapat mengurangi persebaran COVID-19.\n";
+		$message .= "\n";
 		$message .= "Silahkan kirim pesan \"HELP\" untuk dapat melihat kata kunci yang dapat digunakan.\n";
 		$message .= "\n";
 		$message .= "Terima kasih.";
@@ -193,7 +195,7 @@ class Webhook extends Controller
 		}
 		else
 		{
-			$message = "Kata kunci tidak ditemukan :(\n";
+			$message = "Kata kunci tidak ditemukan 0x100010\n";
 			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
 			$textMessageBuilder = new TextMessageBuilder($message);
