@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Log\Logger;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
@@ -28,24 +26,14 @@ class Webhook extends Controller
 	* @var Response
 	*/
 	private $response;
-	/**
-	* @var Logger
-	*/
-	private $logger;
 	
-
-	public function __construct(
-		Request $request,
-		Response $response,
-		Logger $logger
-	) {
+	public function __construct(Request $request, Response $response) {
 		$this->request = $request;
 		$this->response = $response;
-		$this->logger = $logger;
 
 		// create bot object
-		$httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
-		$this->bot  = new LINEBot($httpClient, ['channelSecret' => getenv('CHANNEL_SECRET')]);
+		$httpClient = new CurlHTTPClient('7BsGfbfyE/7uq9NX+mFjXndUEnF2p9le1F2srRWQRgh8MDMIUtKsiYZ7K4v2GKX0Twvi9Z8ipzdck1n2MXtX1BIrKoaZOmNtlB3HcRCKaZk6Fe4a3AuG5n/QHGrpyWoxvWVj6WEpuRqguN+DZaFq4wdB04t89/1O/w1cDnyilFU=');
+		$this->bot  = new LINEBot($httpClient, ['channelSecret' => '1dfbde6acc6a7dcfdcedc082b63c0de7']);
 	}
 
 	private function handleEvents()
@@ -88,7 +76,7 @@ class Webhook extends Controller
 
 			// create welcome message
 			$message  = "Salam kenal, " . $profile['displayName'] . "!\n";
-			$message .= "Silakan kirim pesan \"MULAI\" untuk memulai kuis Tebak Kode.";
+			$message .= "Silakan kirim pesan \"HELP\" untuk melihat kata kunci yang dapat digunakan.";
 			$textMessageBuilder = new TextMessageBuilder($message);
 
 			// create sticker message
@@ -112,7 +100,7 @@ class Webhook extends Controller
 		$message = 'Send News from '.$endpoint.' ...';
 
 		$textMessageBuilder = new TextMessageBuilder($message);
-		$this->bot->replyMessage($replyToken $textMessageBuilder);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
 
 	private function sendStatistic($replyToken, $countryCode='IDN')
@@ -125,7 +113,7 @@ class Webhook extends Controller
 			$message = 'Send World Report from '.$endpoint.' ...';
 
 			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($replyToken $textMessageBuilder);
+			$this->bot->replyMessage($replyToken, $textMessageBuilder);
 		}
 		else
 		{
@@ -134,8 +122,36 @@ class Webhook extends Controller
 			$message = 'Send Report from '.$endpoint.' ...';
 
 			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($replyToken $textMessageBuilder);
+			$this->bot->replyMessage($replyToken, $textMessageBuilder);
 		}
+	}
+
+	private function sendAbout($replyToken)
+	{
+		$message = "";
+		$message .= "Chatbot ini ditujukan untuk membantu masyarakat mempermudah memperoleh informasi mengenai COVID-19.\n";
+		$message .= "Informasi yang dapat ditampilkan dari chatbot ini adalah berita mengenai COVID-19 dari WHO, laporan jumlah kasus COVID-19 di seluruh dunia ataupun negara yang diinginkan.\n";
+		$message .= "\n";
+		$message .= "Semoga dengan adanya chatbot ini, masyarakat menjadi semakin teredukasi, terhindar dari hoax, serta dapat mengurangi persebaran COVID-19.\n";
+		$message .= "Silahkan kirim pesan \"HELP\" untuk dapat melihat kata kunci yang dapat digunakan.\n";
+		$message .= "\n";
+		$message .= "Terima kasih.";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
+	private function sendHelp($replyToken)
+	{
+		$message = "";
+		$message .= "Berikut list kata kunci yang dapat Anda gunakan:\n";
+		$message .= "- news                    Untuk menampilkan berita terkini dari WHO.\n";
+		$message .= "- report world            Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n";
+		$message .= "- report [country_code]   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+		$message .= "- about                   Untuk menampilkan informasi mengenai chatbot ini.\n";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
 
 	private function textMessage($event)
@@ -160,10 +176,18 @@ class Webhook extends Controller
 				$this->sendStatistic($event['replyToken'], $words[1]);
 			}
 		}
+		else if($words[0] == 'about')
+		{
+			$this->sendAbout($event['replyToken']);
+		}
+		else if($words[0] == 'help')
+		{
+			$this->sendHelp($event['replyToken']);
+		}
 		else
 		{
-			$message = "";
-			$message .= "";
+			$message = "Kata kunci tidak ditemukan :(\n";
+			$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
 			$textMessageBuilder = new TextMessageBuilder($message);
 			$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
