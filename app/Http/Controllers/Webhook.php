@@ -445,6 +445,8 @@ class Webhook extends Controller
 		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
 		$message .= "- steps check\n";
 		$message .= "   Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
+		$message .= "- steps symptoms\n";
+		$message .= "   Untuk menampilkan informasi mengenai gejala dari COVID-19.\n";
 		$message .= "- steps health\n";
 		$message .= "   Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
 		$message .= "- about\n";
@@ -552,6 +554,7 @@ class Webhook extends Controller
 					$message = "Parameter yang dimasukkan tidak sesuai ".$emoji."\n";
 					$message .= "Suggestion:\n";
 					$message .= "- steps check: Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
+					$message .= "- steps symptoms: Untuk menampilkan informasi mengenai gejala dari COVID-19.\n";
 					$message .= "- steps health: Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
 					$message .= "\n";
 					$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci lainnya yang tersedia.";
