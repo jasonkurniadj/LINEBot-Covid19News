@@ -9,8 +9,10 @@ use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\StickerMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
-use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 
 class Webhook extends Controller
@@ -105,10 +107,37 @@ class Webhook extends Controller
 	{
 		$endpoint = 'https://www.who.int/rss-feeds/news-english.xml';
 
-		$message = 'Send News from '.$endpoint.' ...';
+		$carouselTemplateBuilder = new CarouselTemplateBuilder(
+			[
+				new CarouselColumnTemplateBuilder(
+					"[TITLE_NEWS_1]",
+					"Sat, 04 Apr 2020 08:59:08 Z",
+					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
+					[
+						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/04-04-2020-national-ethics-committees-and-covid-19"),
+					]
+				),
+				new CarouselColumnTemplateBuilder(
+					"[TITLE_NEWS_2]",
+					"Fri, 03 Apr 2020 19:14:24 Z",
+					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
+					[
+						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/03-04-2020-who-and-unicef-to-partner-on-pandemic-response-through-covid-19-solidarity-response-fund"),
+					]
+				),
+				new CarouselColumnTemplateBuilder(
+					"[TITLE_NEWS_3]",
+					"Fri, 03 Apr 2020 15:22:40 Z",
+					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
+					[
+						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/03-04-2020-digital-technology-for-covid-19-response"),
+					]
+				),
+			]
+		);
 
-		$textMessageBuilder = new TextMessageBuilder($message);
-		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+		$templateMessageBuilder = new TemplateMessageBuilder('COVID-19 News', $carouselTemplateBuilder);
+		$this->bot->replyMessage($replyToken, $templateMessageBuilder);
 	}
 
 	private function sendStatistic($replyToken, $countryCode)
@@ -292,10 +321,12 @@ class Webhook extends Controller
 			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
 
 			$buttonTemplateBuilder = new ButtonTemplateBuilder(
-				"[COUNTRY_NAME]",
+				"Indonesia",
 				"Last updated: April 5, 2020",
 				"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-				[]
+				[
+					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
+				]
 			);
 
 			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
