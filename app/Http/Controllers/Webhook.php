@@ -284,31 +284,31 @@ class Webhook extends Controller
 		{
 			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
 
-			// $buttonTemplateBuilder = new ButtonTemplateBuilder(
-			// 	"[COUNTRY_NAME]",
-			// 	"[COUNTRY_REPORT]",
-			// 	"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-			// 	[
-			// 		new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
-			// 	]
-			// );
-
-			// $templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
-			// $this->bot->replyMessage($replyToken, $templateMessageBuilder);
-
-			$httpClient->post(
-				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
+			$buttonTemplateBuilder = new ButtonTemplateBuilder(
+				"[COUNTRY_NAME]",
+				"[COUNTRY_REPORT]",
+				"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
 				[
-					'replyToken' => $replyToken,
-					'message' => [
-						[
-							'type' => 'flex',
-							'altText' => 'Country Report',
-							'contents' => json_decode($json)
-						]
-					],
+					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
 				]
 			);
+
+			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
+			$this->bot->replyMessage($replyToken, $templateMessageBuilder);
+
+			// $httpClient->post(
+			// 	LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
+			// 	[
+			// 		'replyToken' => $replyToken,
+			// 		'message' => [
+			// 			[
+			// 				'type' => 'flex',
+			// 				'altText' => 'Country Report',
+			// 				'contents' => json_decode($json)
+			// 			]
+			// 		],
+			// 	]
+			// );
 		}
 	}
 
