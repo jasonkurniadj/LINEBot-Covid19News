@@ -531,6 +531,7 @@ class Webhook extends Controller
 					$this->sendStatistic($event['replyToken'], $words[1]);
 				}
 				break;
+			case 'step':
 			case 'steps':
 				try {
 					if($totalWords > 1)
@@ -549,12 +550,12 @@ class Webhook extends Controller
 						}
 						else
 						{
-							throw new Exception("Not Found");
+							throw new Exception("Not Found", 1);
 						}
 					}
 					else
 					{
-						throw new Exception("Not Found");
+						throw new Exception("Not Found", 1);
 					}
 				} catch (Exception $e) {
 					$hex = "100010";
