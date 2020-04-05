@@ -468,6 +468,7 @@ class Webhook extends Controller
 		$userMessage = strtolower($userMessage);
 
 		$words = explode(' ', trim($userMessage));
+		$totalWords = count($words);
 
 		switch ($words[0]) {
 			case 'hallo':
@@ -521,9 +522,7 @@ class Webhook extends Controller
 				$this->sendNews($event['replyToken']);
 				break;
 			case 'report':
-				$count = count($words);
-
-				if($count === 1 || $words[1] == 'world')
+				if($totalWords === 1 || $words[1] == 'world')
 				{
 					$this->sendStatistic($event['replyToken'], 'world');
 				}
@@ -533,20 +532,31 @@ class Webhook extends Controller
 				}
 				break;
 			case 'steps':
-				if($words[1] == 'check')
-				{
-					$this->sendCheck($event['replyToken']);
-				}
-				else if($words[1] == 'symptoms')
-				{
-					$this->sendSymptoms($event['replyToken']);
-				}
-				else if($words[1] == 'clean' || $words[1] == 'health')
-				{
-					$this->sendHealth($event['replyToken']);
-				}
-				else
-				{
+				try {
+					if($totalWords > 1)
+					{
+						if($words[1] == 'check')
+						{
+							$this->sendCheck($event['replyToken']);
+						}
+						else if($words[1] == 'symptoms')
+						{
+							$this->sendSymptoms($event['replyToken']);
+						}
+						else if($words[1] == 'clean' || $words[1] == 'health')
+						{
+							$this->sendHealth($event['replyToken']);
+						}
+						else
+						{
+							throw new Exception("Not Found");
+						}
+					}
+					else
+					{
+						throw new Exception("Not Found");
+					}
+				} catch (Exception $e) {
 					$hex = "100010";
 					$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
 					$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
