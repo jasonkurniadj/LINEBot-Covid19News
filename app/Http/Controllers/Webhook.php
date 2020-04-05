@@ -373,6 +373,19 @@ class Webhook extends Controller
 		$this->bot->replyMessage($replyToken, $imgMessageBuilder);
 	}
 
+	private function sendSymptoms($replyToken)
+	{
+		$message = "";
+		$message .= "Gejala COVID-19 yang paling umum adalah demam, kelelahan, dan batuk kering. Beberapa pasien mungkin mengalami sakit dan nyeri, hidung tersumbat, pilek, sakit tenggorokan atau diare. Gejala-gejala ini biasanya ringan dan mulai secara bertahap.\n";
+		$message .= "\n";
+		$message .= "Beberapa orang menjadi terinfeksi tetapi tidak mengembangkan gejala apa pun dan merasa tidak enak badan. Kebanyakan orang (sekitar 80%) pulih dari penyakit tanpa perlu perawatan khusus. Sekitar 1 dari setiap 6 orang yang mendapatkan COVID-19 sakit parah dan mengalami kesulitan bernapas.\n";
+		$message .= "\n";
+		$message .= "Orang yang lebih tua, dan mereka yang memiliki masalah medis yang mendasari seperti tekanan darah tinggi, masalah jantung atau diabetes, lebih mungkin untuk mengembangkan penyakit serius. Orang dengan demam, batuk dan kesulitan bernapas harus mencari perhatian medis.";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
 	private function sendHealth($replyToken)
 	{
 		$message = "";
@@ -521,6 +534,10 @@ class Webhook extends Controller
 				if($words[1] == 'check')
 				{
 					$this->sendCheck($event['replyToken']);
+				}
+				else if($words[1] == 'symptoms')
+				{
+					$this->sendSymptoms($event['replyToken']);
 				}
 				else if($words[1] == 'clean' || $words[1] == 'health')
 				{
