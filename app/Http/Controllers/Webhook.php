@@ -326,7 +326,7 @@ class Webhook extends Controller
 				"Last updated: April 5, 2020",
 				"https://upload.wikimedia.org/wikipedia/commons/e/ef/International_Flag_of_Planet_Earth.svg",
 				[
-					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
+					new MessageTemplateActionBuilder('See Detail Number', 'report world detail'),
 				]
 			);
 
@@ -342,7 +342,7 @@ class Webhook extends Controller
 				"Last updated: April 5, 2020",
 				"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
 				[
-					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
+					new MessageTemplateActionBuilder('See Detail Number', 'report '.$countryCode.' detail'),
 				]
 			);
 
@@ -477,6 +477,29 @@ class Webhook extends Controller
 					$message = "Hallo, ".$profile['displayName']."!";
 					$this->interactiveTalk($event['replyToken'], $message);
 				}
+				break;
+			case 'corona':
+			case 'coronavirus':
+			case 'corona virus':
+				$message = "";
+				$message .= "Coronavirus adalah keluarga besar virus yang dapat menyebabkan penyakit pada hewan atau manusia. Pada manusia, beberapa coronavirus diketahui menyebabkan infeksi pernafasan mulai dari flu biasa hingga penyakit yang lebih parah seperti Middle East Respiratory Syndrome (MERS) dan Severe Acute Respiratory Syndrome (SARS). Virus corona yang paling baru ditemukan menyebabkan penyakit coronavirus COVID-19.\n";
+				$message .= "\n";
+				$message .= "Coronaviruses are a large family of viruses which may cause illness in animals or humans.  In humans, several coronaviruses are known to cause respiratory infections ranging from the common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS) and Severe Acute Respiratory Syndrome (SARS). The most recently discovered coronavirus causes coronavirus disease COVID-19.";
+				
+				$this->interactiveTalk($event['replyToken'], $message);
+				break;
+			case 'cov':
+			case 'covid':
+			case 'cov19':
+			case 'covid19':
+			case 'cov-19':
+			case 'covid-19':
+				$message = "";
+				$message .= "COVID-19 adalah penyakit menular yang disebabkan oleh coronavirus yang paling baru ditemukan. Virus dan penyakit baru ini tidak diketahui sebelum wabah dimulai di Wuhan, Cina, pada bulan Desember 2019.\n";
+				$message .= "\n";
+				$message .= "COVID-19 is the infectious disease caused by the most recently discovered coronavirus. This new virus and disease were unknown before the outbreak began in Wuhan, China, in December 2019.";
+
+				$this->interactiveTalk($event['replyToken'], $message);
 				break;
 
 			case 'news':
