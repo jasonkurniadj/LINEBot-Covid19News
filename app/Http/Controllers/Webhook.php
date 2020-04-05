@@ -462,6 +462,29 @@ class Webhook extends Controller
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
 
+	private function suggestion($replyToken, $keyword)
+	{
+		switch ($keyword) {
+			case 'steps':
+				$hex = "100010";
+				$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+				$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
+				$message = "Parameter yang dimasukkan tidak sesuai ".$emoji."\n";
+				$message .= "Suggestion:\n";
+				$message .= "- steps check: Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
+				$message .= "- steps symptoms: Untuk menampilkan informasi mengenai gejala dari COVID-19.\n";
+				$message .= "- steps health: Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
+				$message .= "\n";
+				$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci lainnya yang tersedia.";
+
+				$textMessageBuilder = new TextMessageBuilder($message);
+				$this->bot->replyMessage($replyToken, $textMessageBuilder);
+				break;
+		}
+		
+	}
+
 	private function textMessage($event)
 	{
 		$userMessage = $event['message']['text'];
@@ -471,6 +494,9 @@ class Webhook extends Controller
 		$totalWords = count($words);
 
 		switch ($words[0]) {
+			case 'test':
+				$this->interactiveTalk($event['replyToken'], "OK");
+				break;
 			case 'hallo':
 			case 'hello':
 				$res = $this->bot->getProfile($event['source']['userId']);
@@ -533,45 +559,28 @@ class Webhook extends Controller
 				break;
 			case 'step':
 			case 'steps':
-				try {
-					if($totalWords > 1)
+				if($totalWords > 1)
+				{
+					if($words[1] == 'check')
 					{
-						if($words[1] == 'check')
-						{
-							$this->sendCheck($event['replyToken']);
-						}
-						else if($words[1] == 'symptoms')
-						{
-							$this->sendSymptoms($event['replyToken']);
-						}
-						else if($words[1] == 'clean' || $words[1] == 'health')
-						{
-							$this->sendHealth($event['replyToken']);
-						}
-						else
-						{
-							throw new Exception("Not Found", 1);
-						}
+						$this->sendCheck($event['replyToken']);
+					}
+					else if($words[1] == 'symptoms')
+					{
+						$this->sendSymptoms($event['replyToken']);
+					}
+					else if($words[1] == 'clean' || $words[1] == 'health')
+					{
+						$this->sendHealth($event['replyToken']);
 					}
 					else
 					{
-						throw new Exception("Not Found", 1);
+						$this->suggestion($event['replyToken'], 'steps');
 					}
-				} catch (Exception $e) {
-					$hex = "100010";
-					$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
-					$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
-
-					$message = "Parameter yang dimasukkan tidak sesuai ".$emoji."\n";
-					$message .= "Suggestion:\n";
-					$message .= "- steps check: Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
-					$message .= "- steps symptoms: Untuk menampilkan informasi mengenai gejala dari COVID-19.\n";
-					$message .= "- steps health: Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
-					$message .= "\n";
-					$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci lainnya yang tersedia.";
-
-					$textMessageBuilder = new TextMessageBuilder($message);
-					$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+				}
+				else
+				{
+					$this->suggestion($event['replyToken'], 'steps');
 				}
 				break;
 			case 'contact':
