@@ -5,11 +5,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
-use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\StickerMessageBuilder;
+use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
+use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
-use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 
 class Webhook extends Controller
@@ -132,6 +133,34 @@ class Webhook extends Controller
 		}
 	}
 
+	private function sendCheck($replyToken)
+	{
+		$imgURL = 'https://asset.kompas.com/data/photo/special-page/infographic/62003201110455.jpeg';
+
+		$imgMessageBuilder = new ImageMessageBuilder($imgURL, $imgURL);
+		$this->bot->replyMessage($replyToken, $imgMessageBuilder);
+	}
+
+	private function sendHealth($replyToken)
+	{
+		$message = "";
+		$message .= "Cara menghindari penularan COVID-19:\n";
+		$message .= "1. Cuci tangan dengan benar dan menggunakan sabun.\n";
+		$message .= "2. Menjaga jarak atau physical distancing.\n";
+		$message .= "3. Hindari kontak fisik dengan hewan yang berpotensi menularkan corona virus.\n";
+		$message .= "4. Hindari menyentuh area wajah.\n";
+		$message .= "5. Melakukan etika batuk dan bersin.\n";
+		$message .= "6. Tetap di rumah dan cari bantuan medis jika sakit.\n";
+		$message .= "7. Menggunakan masker kain untuk orang sehat, dan masker bedah untuk yang kurang sehat.\n";
+		$message .= "8. Bersihkan barang pribadi dan perabotan rumah.\n";
+		$message .= "9. Selalu mencuci bahan makanan.\n";
+		$message .= "10. Menjaga daya tahan tubuh.\n";
+		$message .= "11. Tetap produktif dan beribadah.";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
 	private function sendContact($replyToken)
 	{
 		$message = "";
@@ -169,6 +198,10 @@ class Webhook extends Controller
 		$message .= "   Untuk menampilkan rangkuman laporan dari data seluruh dunia.\n";
 		$message .= "- report [country_code]\n";
 		$message .= "   Untuk menampilkan rangkuman laporan dari kode negara yang dimasukkan, misal \"report IDN\".\n";
+		$message .= "- steps check\n";
+		$message .= "   Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
+		$message .= "- steps health\n";
+		$message .= "   Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
 		$message .= "- about\n";
 		$message .= "   Untuk menampilkan informasi mengenai chatbot ini.\n";
 
@@ -197,7 +230,7 @@ class Webhook extends Controller
 				{
 					$profile = $res->getJSONDecodedBody();
 
-					$message = "Hai, ".$profile['displayName']."!";
+					$message = "Hi, ".$profile['displayName']."!";
 					$this->interactiveTalk($event['replyToken'], $message);
 				}
 				break;
@@ -218,7 +251,9 @@ class Webhook extends Controller
 				$this->sendNews($event['replyToken']);
 				break;
 			case 'report':
-				if($words[1] == 'world' || !isset($words[1]))
+				$count = count($words);
+
+				if($count === 1 || $words[1] == 'world')
 				{
 					$this->sendStatistic($event['replyToken'], 'world');
 				}
@@ -230,11 +265,11 @@ class Webhook extends Controller
 			case 'steps':
 				if($words[1] == 'check')
 				{
-
+					$this->sendCheck($event['replyToken']);
 				}
 				else if($words[1] == 'clean' || $words[1] == 'health')
 				{
-
+					$this->sendHealth($event['replyToken']);
 				}
 				else
 				{
@@ -245,7 +280,7 @@ class Webhook extends Controller
 					$message = "Parameter yang dimasukkan tidak sesuai ".$emoji."\n";
 					$message .= "Suggestion:\n";
 					$message .= "- steps check: Untuk menampilkan informasi siapa saja yang perlu melakukan pemeriksaan ke rumah sakit terkait COVID-19.\n";
-					$message .= "- steps clean: Untuk menampilkan informasi bagaimana menjaga kesehatan kita agar terhindar dari COVID-19.\n";
+					$message .= "- steps health: Untuk menampilkan informasi bagaimana menjaga kesehatan dan kebersihan agar terhindar dari COVID-19.\n";
 					$message .= "\n";
 					$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci lainnya yang tersedia.";
 
