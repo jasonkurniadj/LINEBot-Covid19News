@@ -110,48 +110,49 @@ class Webhook extends Controller
 		$xml = simplexml_load_file($endpoint);
 		$news = $xml->channel;
 
-		$link = [
-			$news->item[0]->link,
-			$news->item[1]->link,
-			$news->item[2]->link,
-			$news->item[3]->link,
-			$news->item[4]->link
-		];
-		$title = [
-			$news->item[0]->title,
-			$news->item[1]->title,
-			$news->item[2]->title,
-			$news->item[3]->title,
-			$news->item[4]->title
-		];
-		$pubDate = [
-			$news->item[0]->pubDate,
-			$news->item[1]->pubDate,
-			$news->item[2]->pubDate,
-			$news->item[3]->pubDate,
-			$news->item[4]->pubDate
-		];
-
-		$strIdx = 100;
-		$description = [
-			substr(trim($news->item[0]->description), 0, $strIdx)."...",
-			substr(trim($news->item[1]->description), 0, $strIdx)."...",
-			substr(trim($news->item[2]->description), 0, $strIdx)."...",
-			substr(trim($news->item[3]->description), 0, $strIdx)."...",
-			substr(trim($news->item[4]->description), 0, $strIdx)."..."
-		];
+		$link = array(
+			strval($news->item[0]->link),
+			strval($news->item[1]->link),
+			strval($news->item[2]->link),
+			strval($news->item[3]->link),
+			strval($news->item[4]->link)
+		);
+		$title = array(
+			substr(trim($news->item[0]->title, " "), 0, 35)."...",
+			substr(trim($news->item[1]->title, " "), 0, 35)."...",
+			substr(trim($news->item[2]->title, " "), 0, 35)."...",
+			substr(trim($news->item[3]->title, " "), 0, 35)."...",
+			substr(trim($news->item[4]->title, " "), 0, 35)."..."
+		);
+		$pubDate = array(
+			strval($news->item[0]->pubDate),
+			strval($news->item[1]->pubDate),
+			strval($news->item[2]->pubDate),
+			strval($news->item[3]->pubDate),
+			strval($news->item[4]->pubDate)
+		);
 
 		$imgURL = "https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg";
-		$carouselColumTemplateBuilder = [];
+		$carouselTemplateBuilder = new CarouselTemplateBuilder(
+			[
+				new CarouselColumnTemplateBuilder(
+					$title[0], $pubDate[0], $imgURL, [new UriTemplateActionBuilder('View Link', $link[0]),]
+				),
+				new CarouselColumnTemplateBuilder(
+					$title[1], $pubDate[1], $imgURL, [new UriTemplateActionBuilder('View Link', $link[1]),]
+				),
+				new CarouselColumnTemplateBuilder(
+					$title[2], $pubDate[2], $imgURL, [new UriTemplateActionBuilder('View Link', $link[2]),]
+				),
+				new CarouselColumnTemplateBuilder(
+					$title[3], $pubDate[3], $imgURL, [new UriTemplateActionBuilder('View Link', $link[3]),]
+				),
+				new CarouselColumnTemplateBuilder(
+					$title[4], $pubDate[4], $imgURL, [new UriTemplateActionBuilder('View Link', $link[4]),]
+				),
+			]
+		);
 
-		for ($i=0; $i<5; $i++) {
-			$itemCorouseColumn = new CarouselColumnTemplateBuilder(
-									$title[$i], $pubDate[$i], $imgURL, [new UriTemplateActionBuilder('View Link', $link[$i])]
-								);
-			array_push($carouselColumTemplateBuilder, $itemCorouseColumn);
-		}
-
-		$carouselTemplateBuilder = new CarouselTemplateBuilder($CarouselColumnTemplateBuilder);
 		$templateMessageBuilder = new TemplateMessageBuilder('COVID-19 News', $carouselTemplateBuilder);
 		$this->bot->replyMessage($replyToken, $templateMessageBuilder);
 	}
