@@ -20,3 +20,5 @@ $router->get('/key', function() {
 });
 
 $router->post('/webhook', 'Webhook');
+
+$router->get('/test_xml', 'Test@testXML');

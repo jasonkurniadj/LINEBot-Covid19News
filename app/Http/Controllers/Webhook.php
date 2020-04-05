@@ -13,6 +13,7 @@ use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 
 class Webhook extends Controller
@@ -106,36 +107,51 @@ class Webhook extends Controller
 	private function sendNews($replyToken)
 	{
 		$endpoint = 'https://www.who.int/rss-feeds/news-english.xml';
+		$xml = simplexml_load_file($endpoint);
+		$news = $xml->channel;
 
-		$carouselTemplateBuilder = new CarouselTemplateBuilder(
-			[
-				new CarouselColumnTemplateBuilder(
-					"[TITLE_NEWS_1]",
-					"Sat, 04 Apr 2020 08:59:08 Z",
-					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
-					[
-						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/04-04-2020-national-ethics-committees-and-covid-19"),
-					]
-				),
-				new CarouselColumnTemplateBuilder(
-					"[TITLE_NEWS_2]",
-					"Fri, 03 Apr 2020 19:14:24 Z",
-					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
-					[
-						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/03-04-2020-who-and-unicef-to-partner-on-pandemic-response-through-covid-19-solidarity-response-fund"),
-					]
-				),
-				new CarouselColumnTemplateBuilder(
-					"[TITLE_NEWS_3]",
-					"Fri, 03 Apr 2020 15:22:40 Z",
-					"https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg",
-					[
-						new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('View Link', "https://www.who.int/news-room/detail/03-04-2020-digital-technology-for-covid-19-response"),
-					]
-				),
-			]
-		);
+		$link = [
+			$news->item[0]->link,
+			$news->item[1]->link,
+			$news->item[2]->link,
+			$news->item[3]->link,
+			$news->item[4]->link
+		];
+		$title = [
+			$news->item[0]->title,
+			$news->item[1]->title,
+			$news->item[2]->title,
+			$news->item[3]->title,
+			$news->item[4]->title
+		];
+		$pubDate = [
+			$news->item[0]->pubDate,
+			$news->item[1]->pubDate,
+			$news->item[2]->pubDate,
+			$news->item[3]->pubDate,
+			$news->item[4]->pubDate
+		];
 
+		$strIdx = 100;
+		$description = [
+			substr(trim($news->item[0]->description), 0, $strIdx)."...",
+			substr(trim($news->item[1]->description), 0, $strIdx)."...",
+			substr(trim($news->item[2]->description), 0, $strIdx)."...",
+			substr(trim($news->item[3]->description), 0, $strIdx)."...",
+			substr(trim($news->item[4]->description), 0, $strIdx)."..."
+		];
+
+		$imgURL = "https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg";
+		$carouselColumTemplateBuilder = [];
+
+		for ($i=0; $i<5; $i++) {
+			$itemCorouseColumn = new CarouselColumnTemplateBuilder(
+									$title[$i], $pubDate[$i], $imgURL, [new UriTemplateActionBuilder('View Link', $link[$i])]
+								);
+			array_push($carouselColumTemplateBuilder, $itemCorouseColumn);
+		}
+
+		$carouselTemplateBuilder = new CarouselTemplateBuilder($CarouselColumnTemplateBuilder);
 		$templateMessageBuilder = new TemplateMessageBuilder('COVID-19 News', $carouselTemplateBuilder);
 		$this->bot->replyMessage($replyToken, $templateMessageBuilder);
 	}
