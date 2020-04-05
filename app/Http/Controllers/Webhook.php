@@ -275,10 +275,17 @@ class Webhook extends Controller
 		{
 			$endpoint = 'https://corona.lmao.ninja/all';
 
-			$message = 'Send World Report from '.$endpoint.' ...';
+			$buttonTemplateBuilder = new ButtonTemplateBuilder(
+				"World Report",
+				"Last updated: April 5, 2020",
+				"https://upload.wikimedia.org/wikipedia/commons/e/ef/International_Flag_of_Planet_Earth.svg",
+				[
+					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
+				]
+			);
 
-			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($replyToken, $textMessageBuilder);
+			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
+			$this->bot->replyMessage($replyToken, $templateMessageBuilder);
 		}
 		else
 		{
@@ -286,11 +293,9 @@ class Webhook extends Controller
 
 			$buttonTemplateBuilder = new ButtonTemplateBuilder(
 				"[COUNTRY_NAME]",
-				"[COUNTRY_REPORT]",
+				"Last updated: April 5, 2020",
 				"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-				[
-					new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
-				]
+				[]
 			);
 
 			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
