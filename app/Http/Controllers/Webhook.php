@@ -111,8 +111,166 @@ class Webhook extends Controller
 		$this->bot->replyMessage($replyToken, $textMessageBuilder);
 	}
 
-	private function sendStatistic($replyToken, $countryCode='IDN')
+	private function sendStatistic($replyToken, $countryCode)
 	{
+		$json = <<<JSON
+		{
+		  "type": "bubble",
+		  "hero": {
+		    "type": "image",
+		    "url": "https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
+		    "size": "full",
+		    "aspectRatio": "20:13",
+		    "aspectMode": "cover",
+		    "action": {
+		      "type": "uri",
+		      "uri": "http://linecorp.com/"
+		    }
+		  },
+		  "body": {
+		    "type": "box",
+		    "layout": "vertical",
+		    "contents": [
+		      {
+		        "type": "text",
+		        "text": "COUNTRY_NAME",
+		        "weight": "bold",
+		        "size": "xl"
+		      },
+		      {
+		        "type": "box",
+		        "layout": "baseline",
+		        "margin": "md",
+		        "contents": [
+		          {
+		            "type": "text",
+		            "text": "Last updated:",
+		            "size": "sm",
+		            "color": "#999999",
+		            "margin": "xs",
+		            "flex": 0,
+		            "style": "italic"
+		          },
+		          {
+		            "type": "text",
+		            "text": "April 5, 2020",
+		            "size": "sm",
+		            "color": "#999999",
+		            "margin": "xs",
+		            "flex": 0,
+		            "style": "italic"
+		          }
+		        ]
+		      },
+		      {
+		        "type": "box",
+		        "layout": "vertical",
+		        "margin": "lg",
+		        "spacing": "sm",
+		        "contents": [
+		          {
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "Total Case",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 2,
+		                "wrap": true
+		              },
+		              {
+		                "type": "text",
+		                "text": "2092",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 4,
+		                "weight": "bold"
+		              }
+		            ]
+		          },
+		          {
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "Active Case",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 2,
+		                "wrap": true
+		              },
+		              {
+		                "type": "text",
+		                "text": "1751",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 4,
+		                "weight": "bold"
+		              }
+		            ]
+		          },
+		          {
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "Recovered",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 2,
+		                "wrap": true
+		              },
+		              {
+		                "type": "text",
+		                "text": "150",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 4,
+		                "weight": "bold"
+		              }
+		            ]
+		          },
+		          {
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "Death",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 2,
+		                "wrap": true
+		              },
+		              {
+		                "type": "text",
+		                "text": "191",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 4,
+		                "weight": "bold"
+		              }
+		            ]
+		          }
+		        ]
+		      }
+		    ]
+		  }
+		}
+		JSON;
+
 		if($countryCode == 'world')
 		{
 			$endpoint = 'https://corona.lmao.ninja/all';
@@ -126,10 +284,31 @@ class Webhook extends Controller
 		{
 			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
 
-			$message = 'Send Report from '.$endpoint.' ...';
+			// $buttonTemplateBuilder = new ButtonTemplateBuilder(
+			// 	"[COUNTRY_NAME]",
+			// 	"[COUNTRY_REPORT]",
+			// 	"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
+			// 	[
+			// 		new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('Action Button','action'),
+			// 	]
+			// );
 
-			$textMessageBuilder = new TextMessageBuilder($message);
-			$this->bot->replyMessage($replyToken, $textMessageBuilder);
+			// $templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
+			// $this->bot->replyMessage($replyToken, $templateMessageBuilder);
+
+			$httpClient->post(
+				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
+				[
+					'replyToken' => $replyToken,
+					'message' => [
+						[
+							'type' => 'flex',
+							'altText' => 'Country Report',
+							'contents' => json_decode($json)
+						]
+					],
+				]
+			);
 		}
 	}
 
