@@ -104,6 +104,34 @@ class Webhook extends Controller
 		}
 	}
 
+	private function joinCallback($event)
+	{
+		$message1 = "";
+		$message1 .= "Hi!\n";
+		$message1 .= "Terima kasih telah mengundang kami.\n";
+		$message1 .= "\n";
+		$message1 .= "Anda dapat mengirimkan pesan \"HELP\" untuk melihat list kata kunci yang dapat digunakan.";
+		$textMessageBuilder1 = new TextMessageBuilder($message1);
+		
+		$hex = "100020";
+		$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+		$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+
+		$message2 = "";
+		$message2 .= "Selalu jaga kesehatan! ".$emoji."\n";
+		$message2 .= "#Covid19 #physicalDistancing #diRumahAja #jagaKebersihan";
+		$textMessageBuilder2 = new TextMessageBuilder($message2);
+
+		$stickerMessageBuilder = new StickerMessageBuilder(11538, 51626496);
+
+		$multiMessageBuilder = new MultiMessageBuilder();
+		$multiMessageBuilder->add($textMessageBuilder1);
+		$multiMessageBuilder->add($textMessageBuilder2);
+		$multiMessageBuilder->add($stickerMessageBuilder);
+
+		$this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+	}
+
 	private function sendAboutCorona($replyToken)
 	{
 		$message = "";
@@ -525,26 +553,60 @@ class Webhook extends Controller
 				break;
 			case 'hallo':
 			case 'hello':
-				$res = $this->bot->getProfile($event['source']['userId']);
-				if ($res->isSucceeded())
-				{
-					$profile = $res->getJSONDecodedBody();
+				$message = 'Hi!';
 
-					$message = "Hi, ".$profile['displayName']."!";
-					$this->interactiveTalk($event['replyToken'], $message);
+				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				{
+					if($event['source']['userId'])
+					{
+						$userId = $event['source']['userId'];
+						$getprofile = $this->bot->getProfile($userId);
+						$profile = $getprofile->getJSONDecodedBody();
+
+						$message = "Hi, ".$profile['displayName'];
+					}
 				}
+				else
+				{
+					$res = $this->bot->getProfile($event['source']['userId']);
+					if ($res->isSucceeded())
+					{
+						$profile = $res->getJSONDecodedBody();
+
+						$message = "Hi, ".$profile['displayName']."!";
+					}
+				}
+
+				$this->interactiveTalk($event['replyToken'], $message);
 				break;
 			case 'hi':
 			case 'hai':
 			case 'hei':
-				$res = $this->bot->getProfile($event['source']['userId']);
-				if ($res->isSucceeded())
-				{
-					$profile = $res->getJSONDecodedBody();
+				$message = 'Hallo!';
 
-					$message = "Hallo, ".$profile['displayName']."!";
-					$this->interactiveTalk($event['replyToken'], $message);
+				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				{
+					if($event['source']['userId'])
+					{
+						$userId = $event['source']['userId'];
+						$getprofile = $this->bot->getProfile($userId);
+						$profile = $getprofile->getJSONDecodedBody();
+
+						$message = "Hallo, ".$profile['displayName'];
+					}
 				}
+				else
+				{
+					$res = $this->bot->getProfile($event['source']['userId']);
+					if ($res->isSucceeded())
+					{
+						$profile = $res->getJSONDecodedBody();
+
+						$message = "Hallo, ".$profile['displayName']."!";
+					}
+				}
+
+				$this->interactiveTalk($event['replyToken'], $message);
 				break;
 
 			case 'corona':
@@ -610,15 +672,18 @@ class Webhook extends Controller
 				break;
 
 			default:
-				$hex = "100010";
-				$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
-				$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				{
+					$hex = "100010";
+					$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
+					$emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
 
-				$message = "Kata kunci tidak ditemukan ".$emoji."\n";
-				$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
+					$message = "Kata kunci tidak ditemukan ".$emoji."\n";
+					$message .= "Kirim pesan \"HELP\" untuk menampilkan kata kunci yang tersedia.";
 
-				$textMessageBuilder = new TextMessageBuilder($message);
-				$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+					$textMessageBuilder = new TextMessageBuilder($message);
+					$this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+				}
 				break;
 		}
 	}
