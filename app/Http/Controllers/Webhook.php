@@ -555,7 +555,7 @@ class Webhook extends Controller
 			case 'hello':
 				$message = 'Hi!';
 
-				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				if($event['source']['type'] == 'group' || $event['source']['type'] == 'room')
 				{
 					if($event['source']['userId'])
 					{
@@ -584,7 +584,7 @@ class Webhook extends Controller
 			case 'hei':
 				$message = 'Hallo!';
 
-				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				if($event['source']['type'] == 'group' || $event['source']['type'] == 'room')
 				{
 					if($event['source']['userId'])
 					{
