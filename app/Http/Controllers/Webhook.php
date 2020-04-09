@@ -104,6 +104,28 @@ class Webhook extends Controller
 		}
 	}
 
+	private function sendAboutCorona($replyToken)
+	{
+		$message = "";
+		$message .= "Coronavirus adalah keluarga besar virus yang dapat menyebabkan penyakit pada hewan atau manusia. Pada manusia, beberapa coronavirus diketahui menyebabkan infeksi pernafasan mulai dari flu biasa hingga penyakit yang lebih parah seperti Middle East Respiratory Syndrome (MERS) dan Severe Acute Respiratory Syndrome (SARS). Virus corona yang paling baru ditemukan menyebabkan penyakit coronavirus COVID-19.\n";
+		$message .= "\n";
+		$message .= "Coronaviruses are a large family of viruses which may cause illness in animals or humans.  In humans, several coronaviruses are known to cause respiratory infections ranging from the common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS) and Severe Acute Respiratory Syndrome (SARS). The most recently discovered coronavirus causes coronavirus disease COVID-19.";
+		
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
+	private function sendAboutCovid19($replyToken)
+	{
+		$message = "";
+		$message .= "COVID-19 adalah penyakit menular yang disebabkan oleh coronavirus yang paling baru ditemukan. Virus dan penyakit baru ini tidak diketahui sebelum wabah dimulai di Wuhan, Cina, pada bulan Desember 2019.\n";
+		$message .= "\n";
+		$message .= "COVID-19 is the infectious disease caused by the most recently discovered coronavirus. This new virus and disease were unknown before the outbreak began in Wuhan, China, in December 2019.";
+
+		$textMessageBuilder = new TextMessageBuilder($message);
+		$this->bot->replyMessage($replyToken, $textMessageBuilder);
+	}
+
 	private function sendNews($replyToken)
 	{
 		$endpoint = 'https://www.who.int/rss-feeds/news-english.xml';
@@ -437,6 +459,10 @@ class Webhook extends Controller
 	{
 		$message = "";
 		$message .= "Berikut list kata kunci yang dapat Anda gunakan:\n";
+		$message .= "- corona\n";
+		$message .= "   Untuk menampilkan informasi mengenai apa itu corona.\n";
+		$message .= "- covid19\n";
+		$message .= "   Untuk menampilkan informasi mengenai apa itu COVID-19.\n";
 		$message .= "- news\n";
 		$message .= "   Untuk menampilkan berita terkini dari WHO.\n";
 		$message .= "- report world\n";
@@ -520,15 +546,11 @@ class Webhook extends Controller
 					$this->interactiveTalk($event['replyToken'], $message);
 				}
 				break;
+
 			case 'corona':
 			case 'coronavirus':
 			case 'corona virus':
-				$message = "";
-				$message .= "Coronavirus adalah keluarga besar virus yang dapat menyebabkan penyakit pada hewan atau manusia. Pada manusia, beberapa coronavirus diketahui menyebabkan infeksi pernafasan mulai dari flu biasa hingga penyakit yang lebih parah seperti Middle East Respiratory Syndrome (MERS) dan Severe Acute Respiratory Syndrome (SARS). Virus corona yang paling baru ditemukan menyebabkan penyakit coronavirus COVID-19.\n";
-				$message .= "\n";
-				$message .= "Coronaviruses are a large family of viruses which may cause illness in animals or humans.  In humans, several coronaviruses are known to cause respiratory infections ranging from the common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS) and Severe Acute Respiratory Syndrome (SARS). The most recently discovered coronavirus causes coronavirus disease COVID-19.";
-				
-				$this->interactiveTalk($event['replyToken'], $message);
+				$this->sendAboutCorona($event['replyToken']);
 				break;
 			case 'cov':
 			case 'covid':
@@ -536,14 +558,8 @@ class Webhook extends Controller
 			case 'covid19':
 			case 'cov-19':
 			case 'covid-19':
-				$message = "";
-				$message .= "COVID-19 adalah penyakit menular yang disebabkan oleh coronavirus yang paling baru ditemukan. Virus dan penyakit baru ini tidak diketahui sebelum wabah dimulai di Wuhan, Cina, pada bulan Desember 2019.\n";
-				$message .= "\n";
-				$message .= "COVID-19 is the infectious disease caused by the most recently discovered coronavirus. This new virus and disease were unknown before the outbreak began in Wuhan, China, in December 2019.";
-
-				$this->interactiveTalk($event['replyToken'], $message);
+				$this->sendAboutCovid19($event['replyToken']);
 				break;
-
 			case 'news':
 				$this->sendNews($event['replyToken']);
 				break;
