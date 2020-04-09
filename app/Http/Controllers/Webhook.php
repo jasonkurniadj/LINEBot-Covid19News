@@ -672,7 +672,7 @@ class Webhook extends Controller
 				break;
 
 			default:
-				if($event['source']['type'] != 'group' || $event['source']['type'] != 'room')
+				if($event['source']['type'] != 'group' && $event['source']['type'] != 'room')
 				{
 					$hex = "100010";
 					$bin = hex2bin(str_repeat('0', 8-strlen($hex)) . $hex);
