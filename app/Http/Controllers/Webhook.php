@@ -457,7 +457,7 @@ class Webhook extends Controller
 						[
 							'type' => 'flex',
 							'altText' => $altText,
-							'contents' => json_encode($json)
+							'contents' => json_decode($json)
 						]
 					],
 				]
