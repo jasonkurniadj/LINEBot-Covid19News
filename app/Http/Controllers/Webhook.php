@@ -441,6 +441,11 @@ class Webhook extends Controller
 
 		if($isOk)
 		{
+			$totalCases = number_format($totalCases, 0, ',', '.');
+			$totalActive = number_format($totalActive, 0, ',', '.');
+			$totalRecovered = number_format($totalRecovered, 0, ',', '.');
+			$totalDeaths = number_format($totalDeaths, 0, ',', '.');
+			
 			$template = str_replace("%1", $countryFlag, $json);
 			$template = str_replace('%2', $countryName, $template);
 			$template = str_replace('%3', $lastUpdate, $template);
