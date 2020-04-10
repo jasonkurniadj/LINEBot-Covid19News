@@ -215,6 +215,7 @@ class Webhook extends Controller
 	{
 		$isOk = false;
 		$timeout = 5;
+		$altText = '';
 
 		$countryFlag = '';
 		$countryName = '';
@@ -248,6 +249,7 @@ class Webhook extends Controller
 				$totalRecovered = $data['recovered'];
 				$totalDeaths = $data['deaths'];
 
+				$altText = 'World Report';
 				$isOk = true;
 			}
 		}
@@ -279,163 +281,163 @@ class Webhook extends Controller
 				{
 					$countryFlag = 'https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg';
 				}
+				$altText = $countryName.' Report';
 				$isOk = true;
 			}
 		}
 
-		$json = <<<JSON
-		{
-		  "type": "bubble",
-		  "hero": {
-		    "type": "image",
-		    "url": "https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-		    "size": "full",
-		    "aspectRatio": "20:13",
-		    "aspectMode": "cover"
-		  },
-		  "body": {
-		    "type": "box",
-		    "layout": "vertical",
-		    "contents": [
-		      {
-		        "type": "text",
-		        "text": "COUNTRY_NAME",
-		        "weight": "bold",
-		        "size": "xl"
-		      },
-		      {
-		        "type": "box",
-		        "layout": "baseline",
-		        "margin": "md",
-		        "contents": [
-		          {
-		            "type": "text",
-		            "text": "Last updated:",
-		            "size": "sm",
-		            "color": "#999999",
-		            "margin": "xs",
-		            "flex": 0,
-		            "style": "italic"
-		          },
-		          {
-		            "type": "text",
-		            "text": "April 5, 2020",
-		            "size": "sm",
-		            "color": "#999999",
-		            "margin": "xs",
-		            "flex": 0,
-		            "style": "italic"
-		          }
-		        ]
-		      },
-		      {
-		        "type": "box",
-		        "layout": "vertical",
-		        "margin": "lg",
-		        "spacing": "sm",
-		        "contents": [
-		          {
-		            "type": "box",
-		            "layout": "baseline",
-		            "spacing": "sm",
-		            "contents": [
-		              {
-		                "type": "text",
-		                "text": "Total Case",
-		                "color": "#aaaaaa",
-		                "size": "sm",
-		                "flex": 2,
-		                "wrap": true
-		              },
-		              {
-		                "type": "text",
-		                "text": "2092",
-		                "wrap": true,
-		                "color": "#666666",
-		                "size": "sm",
-		                "flex": 4,
-		                "weight": "bold"
-		              }
-		            ]
-		          },
-		          {
-		            "type": "box",
-		            "layout": "baseline",
-		            "spacing": "sm",
-		            "contents": [
-		              {
-		                "type": "text",
-		                "text": "Active Case",
-		                "color": "#aaaaaa",
-		                "size": "sm",
-		                "flex": 2,
-		                "wrap": true
-		              },
-		              {
-		                "type": "text",
-		                "text": "1751",
-		                "wrap": true,
-		                "color": "#666666",
-		                "size": "sm",
-		                "flex": 4,
-		                "weight": "bold"
-		              }
-		            ]
-		          },
-		          {
-		            "type": "box",
-		            "layout": "baseline",
-		            "spacing": "sm",
-		            "contents": [
-		              {
-		                "type": "text",
-		                "text": "Recovered",
-		                "color": "#aaaaaa",
-		                "size": "sm",
-		                "flex": 2,
-		                "wrap": true
-		              },
-		              {
-		                "type": "text",
-		                "text": "150",
-		                "wrap": true,
-		                "color": "#666666",
-		                "size": "sm",
-		                "flex": 4,
-		                "weight": "bold"
-		              }
-		            ]
-		          },
-		          {
-		            "type": "box",
-		            "layout": "baseline",
-		            "spacing": "sm",
-		            "contents": [
-		              {
-		                "type": "text",
-		                "text": "Death",
-		                "color": "#aaaaaa",
-		                "size": "sm",
-		                "flex": 2,
-		                "wrap": true
-		              },
-		              {
-		                "type": "text",
-		                "text": "191",
-		                "wrap": true,
-		                "color": "#666666",
-		                "size": "sm",
-		                "flex": 4,
-		                "weight": "bold"
-		              }
-		            ]
-		          }
-		        ]
-		      }
-		    ]
-		  }
-		}
-		JSON;
+		$json = '';
+		$json .= '{';
+		$json .= '  "type": "bubble",';
+		$json .= '  "hero": {';
+		$json .= '    "type": "image",';
+		$json .= '    "url": "https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",';
+		$json .= '    "size": "full",';
+		$json .= '    "aspectRatio": "20:13",';
+		$json .= '    "aspectMode": "cover"';
+		$json .= '  },';
+		$json .= '  "body": {';
+		$json .= '    "type": "box",';
+		$json .= '    "layout": "vertical",';
+		$json .= '    "contents": [';
+		$json .= '      {';
+		$json .= '        "type": "text",';
+		$json .= '        "text": "COUNTRY_NAME",';
+		$json .= '        "weight": "bold",';
+		$json .= '        "size": "xl"';
+		$json .= '      },';
+		$json .= '      {';
+		$json .= '        "type": "box",';
+		$json .= '        "layout": "baseline",';
+		$json .= '        "margin": "md",';
+		$json .= '        "contents": [';
+		$json .= '          {';
+		$json .= '            "type": "text",';
+		$json .= '            "text": "Last updated:",';
+		$json .= '            "size": "sm",';
+		$json .= '            "color": "#999999",';
+		$json .= '            "margin": "xs",';
+		$json .= '            "flex": 0,';
+		$json .= '            "style": "italic"';
+		$json .= '          },';
+		$json .= '          {';
+		$json .= '            "type": "text",';
+		$json .= '            "text": "April 5, 2020",';
+		$json .= '            "size": "sm",';
+		$json .= '            "color": "#999999",';
+		$json .= '            "margin": "xs",';
+		$json .= '            "flex": 0,';
+		$json .= '            "style": "italic"';
+		$json .= '          }';
+		$json .= '        ]';
+		$json .= '      },';
+		$json .= '      {';
+		$json .= '        "type": "box",';
+		$json .= '        "layout": "vertical",';
+		$json .= '        "margin": "lg",';
+		$json .= '        "spacing": "sm",';
+		$json .= '        "contents": [';
+		$json .= '          {';
+		$json .= '            "type": "box",';
+		$json .= '            "layout": "baseline",';
+		$json .= '            "spacing": "sm",';
+		$json .= '            "contents": [';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "Total Case",';
+		$json .= '                "color": "#aaaaaa",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 2,';
+		$json .= '                "wrap": true';
+		$json .= '              },';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "2092",';
+		$json .= '                "wrap": true,';
+		$json .= '                "color": "#666666",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 4,';
+		$json .= '                "weight": "bold"';
+		$json .= '              }';
+		$json .= '            ]';
+		$json .= '          },';
+		$json .= '          {';
+		$json .= '            "type": "box",';
+		$json .= '            "layout": "baseline",';
+		$json .= '            "spacing": "sm",';
+		$json .= '            "contents": [';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "Active Case",';
+		$json .= '                "color": "#aaaaaa",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 2,';
+		$json .= '                "wrap": true';
+		$json .= '              },';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "1751",';
+		$json .= '                "wrap": true,';
+		$json .= '                "color": "#666666",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 4,';
+		$json .= '                "weight": "bold"';
+		$json .= '              }';
+		$json .= '            ]';
+		$json .= '          },';
+		$json .= '          {';
+		$json .= '            "type": "box",';
+		$json .= '            "layout": "baseline",';
+		$json .= '            "spacing": "sm",';
+		$json .= '            "contents": [';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "Recovered",';
+		$json .= '                "color": "#aaaaaa",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 2,';
+		$json .= '                "wrap": true';
+		$json .= '              },';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "150",';
+		$json .= '                "wrap": true,';
+		$json .= '                "color": "#666666",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 4,';
+		$json .= '                "weight": "bold"';
+		$json .= '              }';
+		$json .= '            ]';
+		$json .= '          },';
+		$json .= '          {';
+		$json .= '            "type": "box",';
+		$json .= '            "layout": "baseline",';
+		$json .= '            "spacing": "sm",';
+		$json .= '            "contents": [';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "Death",';
+		$json .= '                "color": "#aaaaaa",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 2,';
+		$json .= '                "wrap": true';
+		$json .= '              },';
+		$json .= '              {';
+		$json .= '                "type": "text",';
+		$json .= '                "text": "191",';
+		$json .= '                "wrap": true,';
+		$json .= '                "color": "#666666",';
+		$json .= '                "size": "sm",';
+		$json .= '                "flex": 4,';
+		$json .= '                "weight": "bold"';
+		$json .= '              }';
+		$json .= '            ]';
+		$json .= '          }';
+		$json .= '        ]';
+		$json .= '      }';
+		$json .= '    ]';
+		$json .= '  }';
+		$json .= '}';
 
 		if($isOk)
 		{
@@ -446,7 +448,7 @@ class Webhook extends Controller
 			// $template = str_replace('%5', $totalActive, $template);
 			// $template = str_replace('%6', $totalRecovered, $template);
 			// $template = str_replace('%7', $totalDeaths, $template);
-	
+
 			$this->httpClient->post(
 				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
 				[
@@ -454,8 +456,8 @@ class Webhook extends Controller
 					'messages' => [
 						[
 							'type' => 'flex',
-							'altText' => 'Country Report',
-							'contents' => json_decode($json)
+							'altText' => $altText,
+							'contents' => $json
 						]
 					],
 				]
