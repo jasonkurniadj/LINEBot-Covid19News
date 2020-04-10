@@ -291,7 +291,7 @@ class Webhook extends Controller
 		$json .= '  "type": "bubble",';
 		$json .= '  "hero": {';
 		$json .= '    "type": "image",';
-		$json .= '    "url": "https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",';
+		$json .= '    "url": "%1",';
 		$json .= '    "size": "full",';
 		$json .= '    "aspectRatio": "20:13",';
 		$json .= '    "aspectMode": "cover"';
@@ -302,7 +302,7 @@ class Webhook extends Controller
 		$json .= '    "contents": [';
 		$json .= '      {';
 		$json .= '        "type": "text",';
-		$json .= '        "text": "COUNTRY_NAME",';
+		$json .= '        "text": "%2",';
 		$json .= '        "weight": "bold",';
 		$json .= '        "size": "xl"';
 		$json .= '      },';
@@ -322,7 +322,7 @@ class Webhook extends Controller
 		$json .= '          },';
 		$json .= '          {';
 		$json .= '            "type": "text",';
-		$json .= '            "text": "April 5, 2020",';
+		$json .= '            "text": "%3",';
 		$json .= '            "size": "sm",';
 		$json .= '            "color": "#999999",';
 		$json .= '            "margin": "xs",';
@@ -352,7 +352,7 @@ class Webhook extends Controller
 		$json .= '              },';
 		$json .= '              {';
 		$json .= '                "type": "text",';
-		$json .= '                "text": "2092",';
+		$json .= '                "text": "%4",';
 		$json .= '                "wrap": true,';
 		$json .= '                "color": "#666666",';
 		$json .= '                "size": "sm",';
@@ -376,7 +376,7 @@ class Webhook extends Controller
 		$json .= '              },';
 		$json .= '              {';
 		$json .= '                "type": "text",';
-		$json .= '                "text": "1751",';
+		$json .= '                "text": "%5",';
 		$json .= '                "wrap": true,';
 		$json .= '                "color": "#666666",';
 		$json .= '                "size": "sm",';
@@ -400,7 +400,7 @@ class Webhook extends Controller
 		$json .= '              },';
 		$json .= '              {';
 		$json .= '                "type": "text",';
-		$json .= '                "text": "150",';
+		$json .= '                "text": "%6",';
 		$json .= '                "wrap": true,';
 		$json .= '                "color": "#666666",';
 		$json .= '                "size": "sm",';
@@ -424,7 +424,7 @@ class Webhook extends Controller
 		$json .= '              },';
 		$json .= '              {';
 		$json .= '                "type": "text",';
-		$json .= '                "text": "191",';
+		$json .= '                "text": "%7",';
 		$json .= '                "wrap": true,';
 		$json .= '                "color": "#666666",';
 		$json .= '                "size": "sm",';
@@ -441,13 +441,13 @@ class Webhook extends Controller
 
 		if($isOk)
 		{
-			// $template = str_replace("%1", $countryFlag, $json);
-			// $template = str_replace('%2', $countryName, $template);
-			// $template = str_replace('%3', $lastUpdate, $template);
-			// $template = str_replace('%4', $totalCases, $template);
-			// $template = str_replace('%5', $totalActive, $template);
-			// $template = str_replace('%6', $totalRecovered, $template);
-			// $template = str_replace('%7', $totalDeaths, $template);
+			$template = str_replace("%1", $countryFlag, $json);
+			$template = str_replace('%2', $countryName, $template);
+			$template = str_replace('%3', $lastUpdate, $template);
+			$template = str_replace('%4', $totalCases, $template);
+			$template = str_replace('%5', $totalActive, $template);
+			$template = str_replace('%6', $totalRecovered, $template);
+			$template = str_replace('%7', $totalDeaths, $template);
 
 			$this->httpClient->post(
 				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
@@ -457,7 +457,7 @@ class Webhook extends Controller
 						[
 							'type' => 'flex',
 							'altText' => $altText,
-							'contents' => json_decode($json)
+							'contents' => json_decode($template)
 						]
 					],
 				]
