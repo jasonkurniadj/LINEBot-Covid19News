@@ -213,6 +213,76 @@ class Webhook extends Controller
 
 	private function sendStatistic($replyToken, $countryCode)
 	{
+		$isOk = false;
+		$timeout = 5;
+
+		$countryFlag = '';
+		$countryName = '';
+		$lastUpdate = '';
+		$totalCases = '';
+		$totalActive = '';
+		$totalRecovered = '';
+		$totalDeaths = '';
+
+		if($countryCode == 'world')
+		{
+			$endpoint = 'https://corona.lmao.ninja/all';
+
+			$ch = curl_init($endpoint);
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$resp = curl_exec($ch);
+			$http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			if(curl_errno($ch)==0 && $http==200)
+			{
+				$data = json_decode($resp, true);
+
+				$countryFlag = 'https://upload.wikimedia.org/wikipedia/commons/e/ef/International_Flag_of_Planet_Earth.svg';
+				$countryName = 'World Report';
+				$lastUpdate = date('M d, Y', $data['updated'] / 1000);
+				$totalCases = $data['cases'];
+				$totalActive = $data['active'];
+				$totalRecovered = $data['recovered'];
+				$totalDeaths = $data['deaths'];
+
+				$isOk = true;
+			}
+		}
+		else
+		{
+			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
+
+			$ch = curl_init($endpoint);
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$resp = curl_exec($ch);
+			$http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			if(curl_errno($ch)==0 && $http==200)
+			{
+				$data = json_decode($resp, true);
+
+				$countryFlag = $data['countryInfo']['flag'];
+				$countryName = $data['country'];
+				$lastUpdate = date('M d, Y', $data['updated'] / 1000);
+				$totalCases = $data['cases'];
+				$totalActive = $data['active'];
+				$totalRecovered = $data['recovered'];
+				$totalDeaths = $data['deaths'];
+
+				if($countryFlag == '')
+				{
+					$countryFlag = 'https://storage.trubus.id/storage/app/public/posts/t20200301/big_d3bca9f9421b0ff826de1bf46a07e335f04807b9.jpg';
+				}
+				$isOk = true;
+			}
+		}
+
 		$json = <<<JSON
 		{
 		  "type": "bubble",
@@ -221,11 +291,7 @@ class Webhook extends Controller
 		    "url": "https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
 		    "size": "full",
 		    "aspectRatio": "20:13",
-		    "aspectMode": "cover",
-		    "action": {
-		      "type": "uri",
-		      "uri": "http://linecorp.com/"
-		    }
+		    "aspectMode": "cover"
 		  },
 		  "body": {
 		    "type": "box",
@@ -371,38 +437,16 @@ class Webhook extends Controller
 		}
 		JSON;
 
-		if($countryCode == 'world')
+		if($isOk)
 		{
-			$endpoint = 'https://corona.lmao.ninja/all';
-
-			$buttonTemplateBuilder = new ButtonTemplateBuilder(
-				"World Report",
-				"Last updated: April 5, 2020",
-				"https://upload.wikimedia.org/wikipedia/commons/e/ef/International_Flag_of_Planet_Earth.svg",
-				[
-					new MessageTemplateActionBuilder('See Detail Number', 'report world detail'),
-				]
-			);
-
-			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
-			$this->bot->replyMessage($replyToken, $templateMessageBuilder);
-		}
-		else
-		{
-			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
-
-			// $buttonTemplateBuilder = new ButtonTemplateBuilder(
-			// 	"Indonesia",
-			// 	"Last updated: April 5, 2020",
-			// 	"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-			// 	[
-			// 		new MessageTemplateActionBuilder('See Detail Number', 'report '.$countryCode.' detail'),
-			// 	]
-			// );
-
-			// $templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
-			// $this->bot->replyMessage($replyToken, $templateMessageBuilder);
-
+			// $template = str_replace("%1", $countryFlag, $json);
+			// $template = str_replace('%2', $countryName, $template);
+			// $template = str_replace('%3', $lastUpdate, $template);
+			// $template = str_replace('%4', $totalCases, $template);
+			// $template = str_replace('%5', $totalActive, $template);
+			// $template = str_replace('%6', $totalRecovered, $template);
+			// $template = str_replace('%7', $totalDeaths, $template);
+	
 			$this->httpClient->post(
 				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
 				[
@@ -416,6 +460,13 @@ class Webhook extends Controller
 					],
 				]
 			);
+		}
+		else
+		{
+			$message = 'Country_code yang dikirim tidak ditemukan.';
+
+			$textMessageBuilder = new TextMessageBuilder($message);
+			$this->bot->replyMessage($replyToken, $textMessageBuilder);
 		}
 	}
 
