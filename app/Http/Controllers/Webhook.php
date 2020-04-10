@@ -19,6 +19,10 @@ use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 class Webhook extends Controller
 {
 	/**
+	* @var HTTPClient
+	*/
+	private $httpClient;
+	/**
 	* @var LINEBot
 	*/
 	private $bot;
@@ -35,8 +39,8 @@ class Webhook extends Controller
 		$this->request = $request;
 		$this->response = $response;
 
-		$httpClient = new CurlHTTPClient('7BsGfbfyE/7uq9NX+mFjXndUEnF2p9le1F2srRWQRgh8MDMIUtKsiYZ7K4v2GKX0Twvi9Z8ipzdck1n2MXtX1BIrKoaZOmNtlB3HcRCKaZk6Fe4a3AuG5n/QHGrpyWoxvWVj6WEpuRqguN+DZaFq4wdB04t89/1O/w1cDnyilFU=');
-		$this->bot  = new LINEBot($httpClient, ['channelSecret' => '1dfbde6acc6a7dcfdcedc082b63c0de7']);
+		$this->httpClient = new CurlHTTPClient('7BsGfbfyE/7uq9NX+mFjXndUEnF2p9le1F2srRWQRgh8MDMIUtKsiYZ7K4v2GKX0Twvi9Z8ipzdck1n2MXtX1BIrKoaZOmNtlB3HcRCKaZk6Fe4a3AuG5n/QHGrpyWoxvWVj6WEpuRqguN+DZaFq4wdB04t89/1O/w1cDnyilFU=');
+		$this->bot  = new LINEBot($this->httpClient, ['channelSecret' => '1dfbde6acc6a7dcfdcedc082b63c0de7']);
 
 		$this->handleEvents();
 	}
@@ -387,31 +391,31 @@ class Webhook extends Controller
 		{
 			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
 
-			$buttonTemplateBuilder = new ButtonTemplateBuilder(
-				"Indonesia",
-				"Last updated: April 5, 2020",
-				"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
-				[
-					new MessageTemplateActionBuilder('See Detail Number', 'report '.$countryCode.' detail'),
-				]
-			);
-
-			$templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
-			$this->bot->replyMessage($replyToken, $templateMessageBuilder);
-
-			// $httpClient->post(
-			// 	LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
+			// $buttonTemplateBuilder = new ButtonTemplateBuilder(
+			// 	"Indonesia",
+			// 	"Last updated: April 5, 2020",
+			// 	"https://raw.githubusercontent.com/NovelCOVID/API/master/assets/flags/id.png",
 			// 	[
-			// 		'replyToken' => $replyToken,
-			// 		'message' => [
-			// 			[
-			// 				'type' => 'flex',
-			// 				'altText' => 'Country Report',
-			// 				'contents' => json_decode($json)
-			// 			]
-			// 		],
+			// 		new MessageTemplateActionBuilder('See Detail Number', 'report '.$countryCode.' detail'),
 			// 	]
 			// );
+
+			// $templateMessageBuilder = new TemplateMessageBuilder('Country Report', $buttonTemplateBuilder);
+			// $this->bot->replyMessage($replyToken, $templateMessageBuilder);
+
+			$this->httpClient->post(
+				LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply',
+				[
+					'replyToken' => $replyToken,
+					'messages' => [
+						[
+							'type' => 'flex',
+							'altText' => 'Country Report',
+							'contents' => json_decode($json)
+						]
+					],
+				]
+			);
 		}
 	}
 
