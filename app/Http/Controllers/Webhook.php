@@ -227,7 +227,7 @@ class Webhook extends Controller
 
 		if($countryCode == 'world')
 		{
-			$endpoint = 'https://corona.lmao.ninja/all';
+			$endpoint = 'https://corona.lmao.ninja/v2/all';
 
 			$ch = curl_init($endpoint);
 			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
@@ -255,7 +255,7 @@ class Webhook extends Controller
 		}
 		else
 		{
-			$endpoint = 'https://corona.lmao.ninja/countries/'.$countryCode;
+			$endpoint = 'https://corona.lmao.ninja/v2/countries/'.$countryCode;
 
 			$ch = curl_init($endpoint);
 			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
